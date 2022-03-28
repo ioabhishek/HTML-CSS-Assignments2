@@ -12,115 +12,63 @@
 	<div id="container">
 		<!-- Start your code from here -->
 		<form class="form">
-			<div class="countInfo">
-				<p><strong>Characters:</strong> <span class="charCount">00</span></p>
-				<p><strong>Threads:</strong> <span class="threadCount">00</span></p>
-			</div>
-			<textarea class="textArea" required="" wrap="soft" placeholder="Type Something..." onkeyup="textInfo(this);"></textarea>
-			<button type="submit" class="btn">Thread</button>
-		</form>
+      <div class="countInfo">
+        <p><strong>Characters:</strong> <span class="charCount">00</span></p>
+        <p><strong>Threads:</strong> <span class="threadCount">00</span></p>
+      </div>
+      <textarea class="textArea" required="" wrap="soft" placeholder="Type Your Thread" onkeyup="textInfo(this);"></textarea>
+      <button type="button" class="btn" onclick=arrMaker(); >Thread</button>
+    </form>
 
-		<div class="threadBox">
-			<div class="thread">
-				<p>
-					<span class="sl">✨</span><br>
-					Your Thread Will Be Here.🔥<br>
-					<br>
-					The character limit for each tweet is 275. <br>
-					<br>
-				</p>
-			</div>
-		</div>
+    <div class="threadList"></div>
 
 	<!-- End your code -->
 
 	</div>
 
 	<script type="text/javascript">
-		const dom = (s) => document.querySelector(s);
-		const form = dom(".form")
-		const charCount = dom(".charCount")
-		const threadCount = dom(".threadCount")
-		const threadBox = dom(".threadBox")
+    const charCount = document.querySelector('.charCount');
+  const threadCount = document.querySelector('.threadCount');
+  const threadList = document.querySelector('.threadList');
 
-		let size = 275;
-		let tweetsArr = [];
+  let size = 275;
+  let count = 1;
 
-		function textInfo(item) {
-			let length = item.value.length;
-			charCount.innerHTML = length;
-			threadCount.innerHTML = Math.ceil(length/size);
-		}
+  function textInfo(text) {
+    let length = text.value.length;
+    charCount.innerHTML = length;
+    threadCount.innerHTML = Math.ceil(length/size);
+  }
 
-		function displayUI(listParent, arr = []) {
-			listParent.innerHTML = arr.map((el, i) => {
-				return `
-				<article class="thread" data-index="${i}">
-				<div class="tools">
-				<span class="index">${i < 9 ? '0' + (i + 1): i + 1}</span>
-				<span class="close" data-index="${i}">❌</span>
-				</div>
-				<p class="tweet">
-				${el}
-				</p>
-				</article>`;
-			})
-			.join("");
-		}
+  function arrMaker() {
+    let arr = [];
+    const textVal = document.querySelector('.textArea').value;
+    const textSize = Math.ceil(textVal.length/size);
+    let offset = 0;
 
-		function tweets(str) {
-			let whiteSpaceSplit = str.split(' ');
-			let result = [];
-			let totalLength = 0;
-			let sentence = '';
+    for (let i = 0; i < textSize; i++) {
+      arr.push(textVal.substr(offset, size));
+      offset += size
+    }
 
-			for (let i = 0; i < whiteSpaceSplit.length; i++) {
-				let curWord = whiteSpaceSplit[i];
-				let curWordLen = curWord.length;
-				sentence += curWord + ' ';
-				totalLength += curWordLen + 1;
-
-				if (totalLength >= size) {
-					sentence = sentence.trim();
-
-					let lenDiff = sentence.length - size;
-					if (lenDiff > 0) {
-						let whiteSpaceLastIndex = sentence.lastIndexOf(' ');
-						sentence = sentence.slice(0, whiteSpaceLastIndex);
-						i--;
-					}
-				result.push(sentence);
-				totalLength = 0;
-				sentence = '';
-				}
-
-				if (i === whiteSpaceSplit.length -1 && totalLength <= size && sentence !== '') {
-					result.push(sentence.trim());
-				}
-			}
-			return result;
-		}
-
-		function thread(e) {
-			e.preventDefault();
-
-			const thread = dom(".thread");
-			tweetsArr = tweets(dom(".textArea").value);
-			displayUI(threadBox, tweetsArr);
-		}
-
-		form.addEventListener("submit", thread);
-
-		function deleteThread(e) {
-			const [el, index] = [e.target, e.target.dataset.index];
-			let txt = e.target.dataset.para;
-			if(el.classList.contains("close")) {
-				tweetsArr.splice(index, 1);
-				displayUI(threadBox, tweetsArr);
-			}
-		}
-		threadBox.addEventListener("click", deleteThread);
-
+    for (let j = 0; j < arr.length; j++) {
+      const createPara = document.createElement('div');
+      createPara.setAttribute('key', count);
+      createPara.innerHTML = `
+      <article class="thread">
+      <div class="tools">
+      <span class="index">${count}</span>
+      </div>
+      <p class="tweet">
+      ${arr[j]}
+      </p>
+      </article>
+      `;
+      count += 1
+      threadList.appendChild(createPara);
+      createPara.addEventListener('click', createPara.remove);
+    }
+  }
 	</script>
 
 </body>
